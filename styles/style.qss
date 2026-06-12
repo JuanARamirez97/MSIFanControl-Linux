@@ -1,0 +1,40 @@
+/* Contenedor principal */
+QWidget {
+    background-color: #000000; /* Igual que .panel */
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+}
+
+/* Etiquetas */
+QLabel {
+    font-weight: bold;
+    margin: 10px;
+    color: #c8c8c8; /* Color rgb(200, 200, 200) del prototipo */
+}
+
+/* Botones estándar */
+QPushButton {
+    background-color: rgba(250, 250, 250, 0.2);
+    color: rgb(200, 200, 200);
+    border: 1px solid rgba(250, 250, 250, 0.5);
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+/* Efecto Hover */
+QPushButton:hover {
+    background-color: rgba(250, 250, 250, 0.3);
+    border: 1px solid rgba(250, 250, 250, 0.8);
+    color: rgb(250, 250, 250);
+}
+
+/* Colores específicos para los botones */
+QPushButton#btn_turbo {
+    color: rgb(180, 0, 0);
+}
+
+QPushButton#btn_normal {
+    color: rgb(0, 180, 0);
+}

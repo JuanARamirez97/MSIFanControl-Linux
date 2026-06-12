@@ -1,6 +1,6 @@
 /* Contenedor principal */
 QWidget {
-    background-color: #000000; /* Igual que .panel */
+    background-color: #1e1e1e;
     color: #ffffff;
     font-family: 'Segoe UI', sans-serif;
     font-size: 14px;
@@ -9,8 +9,9 @@ QWidget {
 /* Etiquetas */
 QLabel {
     font-weight: bold;
-    margin: 10px;
-    color: #c8c8c8; /* Color rgb(200, 200, 200) del prototipo */
+    margin: 0px;
+    padding: 5px;
+    color: #c8c8c8;
 }
 
 /* Botones estándar */
@@ -37,4 +38,17 @@ QPushButton#btn_turbo {
 
 QPushButton#btn_normal {
     color: rgb(0, 180, 0);
+}
+
+#btn_close {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 0px;
+}
+#btn_close:hover {
+    background-color: rgba(255, 0, 0, 0.5);
+    border-radius: 5px;
 }

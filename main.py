@@ -3,24 +3,46 @@
 import sys
 import os
 import subprocess
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout
+from PySide6.QtCore import Qt, QPoint
+from PySide6.QtGui import QIcon, QPainter, QColor, QBrush
 
 class MSIFanControl(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("MSI Fan")
         self.setFixedSize(300, 200)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowIcon(QIcon("media/fan_icon.png"))
 
         layout = QVBoxLayout()
-
+        layout.setContentsMargins(10, 5, 10, 10)
+        layout.setSpacing(10)
+        
+        top_bar = QHBoxLayout()
+        top_bar.setContentsMargins(0, 0, 0, 0)
+        top_bar.setSpacing(0)
+        
+        self.btn_close = QPushButton("✕")
+        self.btn_close.setFixedSize(24, 24)
+        self.btn_close.setObjectName("btn_close")
+        self.btn_close.clicked.connect(self.close)
+        
+        top_bar.addStretch() 
+        top_bar.addWidget(self.btn_close)
+        
+        container_top = QWidget()
+        container_top.setLayout(top_bar)
+        container_top.setFixedHeight(24)
+        
+        layout.addWidget(container_top)
+        layout.addSpacing(5)
+        
         self.label = QLabel("Status: Waiting for command...")
         self.label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label)
 
-        # Asignamos nombres de objeto (ID) para el estilo específico
         self.btn_turbo = QPushButton("Activate Turbo Mode")
         self.btn_turbo.setObjectName("btn_turbo")
         self.btn_turbo.clicked.connect(lambda: self.run_isw("-b", "on", "Turbo Mode: ACTIVATED"))
@@ -32,6 +54,27 @@ class MSIFanControl(QWidget):
         layout.addWidget(self.btn_normal)
 
         self.setLayout(layout)
+        self.dragPos = QPoint()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragPos = event.globalPosition().toPoint() - self.pos()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            self.move(event.globalPosition().toPoint() - self.dragPos)
+            event.accept()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        brush = QBrush(QColor("#1e1e1e"))
+        painter.setBrush(brush)
+        painter.setPen(Qt.NoPen)
+        
+        painter.drawRoundedRect(self.rect(), 10, 10)
 
     def run_isw(self, flag, value, message):
         try:
@@ -54,7 +97,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion") 
     
-    # Cargar estilo externo
     load_stylesheet(app)
     
     window = MSIFanControl()

@@ -1,6 +1,7 @@
 # main.py
 
 import sys
+import os
 import subprocess
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt
@@ -40,11 +41,14 @@ class MSIFanControl(QWidget):
             self.label.setText("Error: Did you run with sudo/kdesu?")
 
 def load_stylesheet(app):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    qss_path = os.path.join(base_dir, "styles", "style.qss")
+        
     try:
-        with open("styles/style.qss", "r") as f:
+        with open(qss_path, "r") as f:
             app.setStyleSheet(f.read())
     except FileNotFoundError:
-        print("Warning: style.qss not found, using default style.")
+        print(f"Warning: style.qss not found at {qss_path}, using default style.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

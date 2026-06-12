@@ -18,8 +18,8 @@ This project was born out of the need to control the temperature of my MSI lapto
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/JuanARamirez97/MSIFanControl-Linux.git`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run the installer to create the shortcut: `python install.py`
+2. Navigate to the folder: `cd MSIFanControl-Linux`
+3. Run the installer: `python3 install.py`
 4. Launch "MSI Fan Control" from your application menu. It will prompt for your administrator password automatically.
 
 ---
@@ -38,6 +38,6 @@ Este proyecto nació de la necesidad de controlar la temperatura de mi laptop MS
 
 ## Instalación
 1. Clona el repositorio: `git clone https://github.com/JuanARamirez97/MSIFanControl-Linux.git`
-2. Instala las dependencias: `pip install -r requirements.txt`
-3. Ejecuta el instalador para crear el acceso directo: `python install.py`
+2. Entra en la carpeta: `cd MSIFanControl-Linux`
+3. Ejecuta el instalador: `python3 install.py`
 4. Lanza "MSI Fan Control" desde tu menú de aplicaciones. Te solicitará la contraseña de administrador automáticamente.

@@ -20,7 +20,7 @@ def setup_all():
 Name=MSI Fan Control
 Comment=Manual MSI fan controller
 Exec=kdesu {python_path} {base_path}/main.py
-Icon={base_path}/fan_icon.png
+Icon={base_path}/media/fan_icon.png
 Terminal=false
 Type=Application
 Categories=System;Utility;

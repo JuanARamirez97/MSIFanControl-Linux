@@ -4,8 +4,10 @@ import sys
 import os
 import subprocess
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtCore import Qt, QPoint, QTimer
 from PySide6.QtGui import QIcon, QPainter, QColor, QBrush
+
+import psutil
 
 class MSIFanControl(QWidget):
     def __init__(self):
@@ -15,6 +17,11 @@ class MSIFanControl(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowIcon(QIcon("media/fan_icon.png"))
+
+        # Timer confs for temp label
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_temp)
+        self.timer.start(2000) # 2 secs update
 
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 5, 10, 10)
@@ -49,6 +56,24 @@ class MSIFanControl(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label)
 
+        # Temperature label
+        self.temp_label = QLabel("")
+        try:
+            temps = psutil.sensors_temperatures()
+            cpu_temps = temps.get('coretemp') or temps.get('acpi_thermal')
+            
+            if (cpu_temps):
+                current_temp = cpu_temps[0].current
+                self.temp_label.setText(f"Actual Temperature: {current_temp}°C")
+            else:
+                self.temp_label.setText("Sensors not found")
+        except AttributeError:
+            print("Your platform does not support sensor temperature readings.")
+        
+        self.temp_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.temp_label)
+
+
         self.btn_turbo = QPushButton("Activate Turbo Mode")
         self.btn_turbo.setObjectName("btn_turbo")
         self.btn_turbo.clicked.connect(lambda: self.run_isw("-b", "on", "Turbo Mode: ACTIVATED"))
@@ -62,6 +87,14 @@ class MSIFanControl(QWidget):
         self.setLayout(layout)
         self.dragPos = QPoint()
 
+    def update_temp(self):
+        temps = psutil.sensors_temperatures()
+        cpu_temps = temps.get('coretemp') or temps.get('acpi_thermal')
+        if cpu_temps:
+            temp_list = [sensor.current for sensor in cpu_temps if sensor.current is not None]
+            avg_temp = sum(temp_list) / len(temp_list)
+            self.temp_label.setText(f"Actual Temperature: {avg_temp:.1f}°C")
+            
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragPos = event.globalPosition().toPoint() - self.pos()

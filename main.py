@@ -29,7 +29,13 @@ class MSIFanControl(QWidget):
         self.btn_close.setObjectName("btn_close")
         self.btn_close.clicked.connect(self.close)
         
+        self.btn_minimize = QPushButton('-')
+        self.btn_minimize.setFixedSize(24, 24)
+        self.btn_minimize.setObjectName("btn_minimize")
+        self.btn_minimize.clicked.connect(self.showMinimized)
+        
         top_bar.addStretch() 
+        top_bar.addWidget(self.btn_minimize)
         top_bar.addWidget(self.btn_close)
         
         container_top = QWidget()

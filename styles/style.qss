@@ -52,3 +52,16 @@ QPushButton#btn_normal {
     background-color: rgba(255, 0, 0, 0.5);
     border-radius: 5px;
 }
+
+#btn_minimize {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 0px;
+}
+#btn_minimize:hover {
+    background-color: rgba(0, 180, 0, 0.5);
+    border-radius: 5px;
+}

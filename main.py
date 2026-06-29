@@ -3,11 +3,10 @@
 import sys
 import os
 import subprocess
+import psutil
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt, QPoint, QTimer
-from PySide6.QtGui import QIcon, QPainter, QColor, QBrush
-
-import psutil
+from PySide6.QtGui import QIcon, QPainter, QColor, QBrush, QPen
 
 class MSIFanControl(QWidget):
     def __init__(self):
@@ -73,7 +72,6 @@ class MSIFanControl(QWidget):
         self.temp_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.temp_label)
 
-
         self.btn_turbo = QPushButton("Activate Turbo Mode")
         self.btn_turbo.setObjectName("btn_turbo")
         self.btn_turbo.clicked.connect(lambda: self.run_isw("-b", "on", "Turbo Mode: ACTIVATED"))
@@ -85,7 +83,6 @@ class MSIFanControl(QWidget):
         layout.addWidget(self.btn_normal)
 
         self.setLayout(layout)
-        self.dragPos = QPoint()
 
     def update_temp(self):
         temps = psutil.sensors_temperatures()
@@ -97,12 +94,9 @@ class MSIFanControl(QWidget):
             
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.dragPos = event.globalPosition().toPoint() - self.pos()
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            self.move(event.globalPosition().toPoint() - self.dragPos)
+            window = self.windowHandle()
+            if window:
+                window.startSystemMove()
             event.accept()
 
     def paintEvent(self, event):
@@ -111,9 +105,14 @@ class MSIFanControl(QWidget):
         
         brush = QBrush(QColor("#1e1e1e"))
         painter.setBrush(brush)
-        painter.setPen(Qt.NoPen)
         
-        painter.drawRoundedRect(self.rect(), 10, 10)
+        pen = QPen(QColor("#ffffff"))
+        pen.setWidth(1)
+        painter.setPen(pen)
+        
+        rect = self.rect().adjusted(0, 0, -1, -1)
+        
+        painter.drawRoundedRect(rect, 10, 10)
 
     def run_isw(self, flag, value, message):
         try:

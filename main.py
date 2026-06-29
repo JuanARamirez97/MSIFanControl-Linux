@@ -137,7 +137,7 @@ class MSIFanControl(QWidget):
 
     def on_tray_icon_activated(self, reason):
         """Handles the interaction with the icon"""
-        if reason == QSystemTrayIcon.Trigger:
+        if reason == QSystemTrayIcon.DoubleClick:
             if self.isVisible():
                 self.hide()
             else:

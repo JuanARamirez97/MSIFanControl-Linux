@@ -4,9 +4,9 @@ import sys
 import os
 import subprocess
 import psutil
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QSystemTrayIcon, QMenu
 from PySide6.QtCore import Qt, QPoint, QTimer
-from PySide6.QtGui import QIcon, QPainter, QColor, QBrush, QPen
+from PySide6.QtGui import QIcon, QPainter, QColor, QBrush, QPen, QAction
 
 class MSIFanControl(QWidget):
     def __init__(self):
@@ -15,7 +15,11 @@ class MSIFanControl(QWidget):
         self.setFixedSize(300, 200)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowIcon(QIcon("media/fan_icon.png"))
+        icon_path = "media/fan_icon.png"
+        self.setWindowIcon(QIcon(icon_path))
+
+        # System tray configuration
+        self.setup_system_tray(icon_path)
 
         # Timer confs for temp label
         self.timer = QTimer()
@@ -38,7 +42,7 @@ class MSIFanControl(QWidget):
         self.btn_minimize = QPushButton('-')
         self.btn_minimize.setFixedSize(24, 24)
         self.btn_minimize.setObjectName("btn_minimize")
-        self.btn_minimize.clicked.connect(self.showMinimized)
+        self.btn_minimize.clicked.connect(self.minimize_to_tray)
         
         top_bar.addStretch() 
         top_bar.addWidget(self.btn_minimize)
@@ -83,6 +87,61 @@ class MSIFanControl(QWidget):
         layout.addWidget(self.btn_normal)
 
         self.setLayout(layout)
+
+    def setup_system_tray(self, icon_path):
+        """Init icon tray and menu context"""
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(QIcon(icon_path))
+        self.tray_icon.setToolTip("MSI Fan Control")
+        
+        # Create the menu that appears when right-clicking the icon
+        tray_menu = QMenu()
+        
+        action_show = QAction("Show Interface", self)
+        action_show.triggered.connect(self.show_window)
+        
+        action_turbo = QAction("Turbo", self)
+        action_turbo.triggered.connect(lambda: self.run_isw("-b", "on", "Turbo Mode: ACTIVATED"))
+ 
+        action_normal = QAction("Normal", self)
+        action_normal.triggered.connect(lambda: self.run_isw("-b", "off", "Normal Mode: ACTIVATED"))
+
+ 
+        action_exit = QAction("Salir", self)
+        action_exit.triggered.connect(QApplication.instance().quit)
+        
+        tray_menu.addAction(action_show)
+        tray_menu.addSeparator()
+        tray_menu.addAction(action_turbo)
+        tray_menu.addSeparator()
+        tray_menu.addAction(action_normal)
+        tray_menu.addSeparator()
+        tray_menu.addAction(action_exit)
+        
+        self.tray_icon.setContextMenu(tray_menu)
+
+        # Intercept left-click/double-click on the tray icon
+        self.tray_icon.activated.connect(self.on_tray_icon_activated)
+        
+        # Make the icon visible on the taskbar
+        self.tray_icon.show()
+
+    def minimize_to_tray(self):
+        """Hide the main window"""
+        self.hide()
+        
+    def show_window(self):
+        """Restore the window and get front"""
+        self.showNormal()
+        self.activateWindow()
+
+    def on_tray_icon_activated(self, reason):
+        """Handles the interaction with the icon"""
+        if reason == QSystemTrayIcon.Trigger:
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show_window()
 
     def update_temp(self):
         temps = psutil.sensors_temperatures()
